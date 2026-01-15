@@ -240,7 +240,7 @@ def calculate_certificate_fingerprint(cert):
         raise ImportError(CRYPTOGRAPHY_NOT_FOUND_ERROR) from e
 
 
-def should_request_bound_token(cert):
+def should_request_bound_token(cert, force_bound_token=False):
     """Determines if a bound token should be requested.
 
     This is based on the GOOGLE_API_PREVENT_AGENT_TOKEN_SHARING_FOR_GCP_SERVICES
@@ -248,6 +248,7 @@ def should_request_bound_token(cert):
 
     Args:
         cert (cryptography.x509.Certificate): The parsed certificate object.
+        force_bound_tokens: override GOOGLE_API_PREVENT_AGENT_TOKEN_SHARING_FOR_GCP_SERVICES
 
     Returns:
         bool: True if a bound token should be requested, False otherwise.
@@ -260,7 +261,7 @@ def should_request_bound_token(cert):
         ).lower()
         == "true"
     )
-    return is_agent_cert and is_opted_in
+    return is_agent_cert and (is_opted_in or force_bound_token)
 
 
 def call_client_cert_callback():

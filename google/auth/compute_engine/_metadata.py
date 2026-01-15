@@ -461,7 +461,7 @@ def get_service_account_info(request, service_account="default"):
     return get(request, path, params={"recursive": "true"})
 
 
-def get_service_account_token(request, service_account="default", scopes=None):
+def get_service_account_token(request, service_account="default", scopes=None, force_bound_token=False):
     """Get the OAuth 2.0 access token for a service account.
 
     Args:
@@ -472,6 +472,7 @@ def get_service_account_token(request, service_account="default", scopes=None):
             an access token.
         scopes (Optional[Union[str, List[str]]]): Optional string or list of
             strings with auth scopes.
+        force_bound_tokens: override GOOGLE_API_PREVENT_AGENT_TOKEN_SHARING_FOR_GCP_SERVICES
     Returns:
         Tuple[str, datetime]: The access token and its expiration.
 
@@ -489,7 +490,7 @@ def get_service_account_token(request, service_account="default", scopes=None):
 
     cert = _agent_identity_utils.get_and_parse_agent_identity_certificate()
     if cert:
-        if _agent_identity_utils.should_request_bound_token(cert):
+        if _agent_identity_utils.should_request_bound_token(cert, bound_token, force_bound_token):
             fingerprint = _agent_identity_utils.calculate_certificate_fingerprint(cert)
             params["bindCertificateFingerprint"] = fingerprint
 
